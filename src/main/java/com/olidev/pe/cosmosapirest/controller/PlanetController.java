@@ -1,5 +1,7 @@
 package com.olidev.pe.cosmosapirest.controller;
 
+import com.olidev.pe.cosmosapirest.exception.BadRequestException;
+import com.olidev.pe.cosmosapirest.exception.ResourceNotFoundException;
 import com.olidev.pe.cosmosapirest.model.dto.PlanetDto;
 import com.olidev.pe.cosmosapirest.model.entity.Planet;
 import com.olidev.pe.cosmosapirest.model.payload.MessageResponse;
@@ -22,11 +24,7 @@ public class PlanetController {
     public ResponseEntity<MessageResponse> listPlanet() {
         List<Planet> getList = planetService.listAll();
         if(getList == null || getList.isEmpty()) {
-            return new ResponseEntity<>(MessageResponse
-                    .builder()
-                    .message("No hay registros encontrados en la tabla planets")
-                    .object(null)
-                    .build(), HttpStatus.NO_CONTENT);
+            throw new ResourceNotFoundException("planets"); // Excepción personalizada
         }
         return new ResponseEntity<>(MessageResponse
                 .builder()
@@ -42,11 +40,7 @@ public class PlanetController {
             planetService.delete(planet);
             return new ResponseEntity<>(planet, HttpStatus.NO_CONTENT);
         } catch (DataAccessException error) {
-            return new ResponseEntity<>(MessageResponse
-                    .builder()
-                    .message("El id a eliminar no existe " + "(" + error.getMessage() + ")")
-                    .object(null)
-                    .build(), HttpStatus.METHOD_NOT_ALLOWED);
+            throw new BadRequestException(error.getMessage()); // Excepción personalizada
         }
     }
 
@@ -100,18 +94,10 @@ public class PlanetController {
                         .object(planetDto)
                         .build(), HttpStatus.CREATED );
             } else {
-                return new ResponseEntity<>(MessageResponse
-                        .builder()
-                        .message("El planeta con id: " + id + ", no se encuentra en la base de datos.")
-                        .object(null)
-                        .build(), HttpStatus.NOT_FOUND );
+                throw new ResourceNotFoundException("planet", "id", id); // Excepción personalizada
             }
         } catch (DataAccessException error) {
-            return new ResponseEntity<>(MessageResponse
-                    .builder()
-                    .message(error.getMessage())
-                    .object(null)
-                    .build(), HttpStatus.METHOD_NOT_ALLOWED );
+            throw new BadRequestException(error.getMessage()); // Excepción personalizada
         }
     }
 
@@ -119,11 +105,7 @@ public class PlanetController {
     public ResponseEntity<MessageResponse> showById(@PathVariable Long id) {
         Planet planet = planetService.findById(id);
         if(planet == null) {
-            return new ResponseEntity<>(MessageResponse
-                    .builder()
-                    .message("El id que busca no existe en la base de datos.")
-                    .object(null)
-                    .build(), HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException("planet", "id", id); // Excepción personalizada
         }
         return new ResponseEntity<>(MessageResponse
                 .builder()
