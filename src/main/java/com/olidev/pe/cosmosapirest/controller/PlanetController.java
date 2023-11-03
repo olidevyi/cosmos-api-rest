@@ -6,6 +6,7 @@ import com.olidev.pe.cosmosapirest.model.dto.PlanetDto;
 import com.olidev.pe.cosmosapirest.model.entity.Planet;
 import com.olidev.pe.cosmosapirest.model.payload.MessageResponse;
 import com.olidev.pe.cosmosapirest.service.IPlanetService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,7 @@ public class PlanetController {
     }
 
     @PostMapping("/planet")
-    public ResponseEntity<MessageResponse> create(@RequestBody PlanetDto planetDto) {
+    public ResponseEntity<MessageResponse> create(@RequestBody @Valid PlanetDto planetDto) {
         try {
             Planet planet = planetService.save(planetDto);
             planetDto = PlanetDto
@@ -73,7 +74,7 @@ public class PlanetController {
     }
 
     @PutMapping("/planet/{id}")
-    public ResponseEntity<MessageResponse> update(@RequestBody PlanetDto planetDto, @PathVariable Long id) {
+    public ResponseEntity<MessageResponse> update(@RequestBody @Valid PlanetDto planetDto, @PathVariable Long id) {
         try {
             if(planetService.existsById(id)) { // Si el id ya existe.
                 System.out.println("Actualizar planeta."); // Si se imprime esto por tanto entra a la condicion correcta.
