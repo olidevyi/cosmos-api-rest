@@ -45,8 +45,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
-    // Agregar excepcion @valid
-    // Agregar excepción ERROR_INTERNAL_SERVER
-    // Por cada excepción 1 commit
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handlerException(Exception exception,
+                                                        WebRequest webRequest) {
+        ApiResponse apiResponse = new ApiResponse(exception.getMessage(),
+                webRequest.getDescription(false));
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR); // Solo devuelve la URI y omite otros datos sensibles.
+    }
 
 }
